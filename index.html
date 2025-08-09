@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Drag & Drop Bookmarklet</title>
+<title>İkonlu Drag & Drop Bookmarklet</title>
 <style>
   body {
     margin: 0; padding: 0; height: 100vh;
@@ -29,7 +29,9 @@
     margin-bottom: 10px;
   }
   a.bookmarklet-button {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 15px 25px;
     background-color: #4CAF50;
     color: white !important;
@@ -41,6 +43,13 @@
   }
   a.bookmarklet-button:active {
     cursor: grabbing;
+  }
+  a.bookmarklet-button img {
+    display: block;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
   }
 </style>
 </head>
@@ -54,7 +63,9 @@
      class="bookmarklet-button" 
      draggable="true"
      title="Bunu yer imlerinize sürükleyin">
-     📌 Bookmarklet Ekle
+     
+     <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="İkon" />
+     <span>Bookmarklet Ekle</span>
   </a>
 </div>
 

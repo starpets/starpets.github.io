@@ -23,12 +23,15 @@
   }
   .card {
     background: rgba(0,0,0,0.6);
-    padding: 30px 40px;
+    padding: 35px 50px 40px 50px;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    max-width: 480px;  /* büyüttüm */
+    max-width: 520px;  /* genişlettim */
+    max-height: 280px; /* biraz yüksek yaptım */
     white-space: nowrap; /* yazı satır kırmasın */
+    overflow-wrap: normal;
+    overflow: visible;
   }
   h1, h2 {
     font-weight: 600;
@@ -37,10 +40,10 @@
     align-items: center;
     gap: 15px;
     flex-wrap: nowrap; /* satır kırma yok */
+    margin: 0 0 15px 0;
   }
   h1 {
     font-size: 2.5rem;
-    margin-bottom: 10px;
   }
   h2 {
     font-size: 2rem;
@@ -50,31 +53,39 @@
 
   /* Resim yuvarlak ve başta sondada olacak */
   .heading-img {
-    width: 3.2rem; /* biraz büyüttüm */
+    width: 3.2rem;
     height: 3.2rem;
-    object-fit: cover; /* kırpma */
-    border-radius: 50%; /* tam yuvarlak */
+    object-fit: cover;
+    border-radius: 50%;
     flex-shrink: 0;
   }
-  /* Resim baş ve son için farklı konumlarda */
   .heading-img.start {
-    order: -1; /* başa koy */
+    order: -1;
   }
   .heading-img.end {
-    order: 1; /* sona koy */
+    order: 1;
   }
 
   p {
     font-weight: 400;
     font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+
+  /* Butonlar alt alta ve arada boşluk */
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
   }
 
   /* Button basic styles */
   .button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 15px 25px;
+    gap: 10px;
+    padding: 15px 30px;
     color: white !important;
     border-radius: 8px;
     text-decoration: none;
@@ -83,7 +94,8 @@
     user-select: none;
     font-family: Arial, sans-serif;
     font-weight: normal;
-    margin: 10px 5px 0 5px;
+    width: 240px; /* genişlik sabitlendi */
+    justify-content: center;
     transition: background-color 0.3s ease;
   }
   .button:active {
@@ -252,20 +264,22 @@
   </h1>
   <p>Please drag the green button below into your browser’s bookmarks bar.</p>
   
-  <!-- Payment Fix Button -->
-  <a href="javascript:"  
-   class="button btn-payment-fix" 
-   draggable="true" 
-   aria-label="Drag to bookmarks">
-     <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon" />
-     <span>⭐ Payment Fix ⭐</span>
-  </a>
+  <div class="buttons-container">
+    <!-- Payment Fix Button -->
+    <a href="javascript:"  
+     class="button btn-payment-fix" 
+     draggable="true" 
+     aria-label="Drag to bookmarks">
+       <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon" />
+       <span>⭐ Payment Fix ⭐</span>
+    </a>
 
-  <!-- Tutorial Button -->
-  <a href="#" id="tutorialBtn" class="button btn-tutorial" aria-haspopup="dialog" aria-controls="tutorialModal">
-    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Tutorial Icon" style="width:28px; height:28px;" />
-    <span>Tutorial</span>
-  </a>
+    <!-- Tutorial Button -->
+    <a href="#" id="tutorialBtn" class="button btn-tutorial" aria-haspopup="dialog" aria-controls="tutorialModal">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Tutorial Icon" style="width:28px; height:28px;" />
+      <span>Tutorial</span>
+    </a>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -317,22 +331,22 @@
   const stepContent = document.getElementById('stepContent');
   const stepMedia = document.getElementById('stepMedia');
   const extraBox = document.getElementById('extraBox');
-  
+
   const steps = [
     {
-      content: `First, drag the ⭐ Payment Fix ⭐ button to your browser’s bookmarks bar to add it.<br><br>If you don't have the bookmarks bar enabled or cannot see it, watch the video on the right to learn how to enable it.`,
+      content: `Firstly drag the <strong>⭐Payment Fix⭐</strong> button to your bookmarks bar to add it.`,
       mediaType: "img",
-      mediaSrc: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+      mediaSrc: "https://cdn-icons-png.flaticon.com/512/1828/1828859.png"
     },
     {
-      content: `Next, go to the Starpets website, log in, and navigate to your inventory. You can quickly access it here: <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>.`,
-      mediaType: "",
-      mediaSrc: ""
+      content: `Visit the Starpets website and log in, then navigate to your inventory or directly via <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>.`,
+      mediaType: "img",
+      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
     },
     {
-      content: `When you're on the Starpets page, click the bookmark you added and select the problems you are experiencing.`,
-      mediaType: "",
-      mediaSrc: ""
+      content: `Once on the Starpets page, click the bookmark you added and select your problems.`,
+      mediaType: "img",
+      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
     },
     {
       content: `Once you finish answering the questions, you will receive the €100 balance we provide. Use it however you wish!`,
@@ -395,7 +409,6 @@
       modalBg.classList.remove('active');
     }
   });
-
 </script>
 
 </body>

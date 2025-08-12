@@ -45,7 +45,7 @@
     align-items: center;
     gap: 8px;
     padding: 15px 25px;
-    background-color: #4CAF50;
+    background-color: #ff9c24;
     color: white !important;
     border-radius: 8px;
     text-decoration: none;
@@ -55,6 +55,10 @@
     font-family: Arial, sans-serif;
     font-weight: normal;
     margin: 10px 5px 0 5px;
+    transition: background-color 0.3s ease;
+  }
+  a.bookmarklet-button:hover {
+    background-color: #e5891d;
   }
   a.bookmarklet-button:active {
     cursor: grabbing;
@@ -67,7 +71,7 @@
     object-fit: cover;
   }
   
-  /* Modal Styles (güncel beyaz arka plan ve renkler) */
+  /* Modal Styles */
   .modal-bg {
     position: fixed;
     top: 0; left: 0;
@@ -77,55 +81,58 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 10px;
+    box-sizing: border-box;
   }
   .modal-bg.active {
     display: flex;
   }
+  .modal-wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: stretch;
+    max-width: 1020px;
+    width: 90%;
+  }
   .modal {
-    background: #fff; /* beyaz */
+    background: #fff;
     border-radius: 12px;
     max-width: 700px;
-    width: 90%;
+    width: 100%;
     padding: 20px 30px 30px 30px;
-    color: #222; /* koyu renk */
+    color: #222;
     text-align: left;
     position: relative;
-
     display: flex;
-    gap: 20px;
-  }
-  .modal-content-wrapper {
-    flex: 1;
+    flex-direction: column;
+    box-sizing: border-box;
   }
   .modal h2 {
     margin-bottom: 20px;
     font-weight: 600;
     font-size: 2rem;
-    color: #222;
   }
-  .modal .step-content {
-    margin-bottom: 20px;
+  .step-content {
     font-size: 1.1rem;
     min-height: 100px;
-    color: #222;
+    margin-bottom: 20px;
   }
-  .modal .step-content a {
+  .step-content a {
     color: #ff9c24;
     text-decoration: underline;
   }
-  .modal .step-media {
-    max-width: 320px;
+  .step-media {
+    max-width: 100%;
     max-height: 300px;
     margin-bottom: 20px;
   }
-  .modal .step-media img,
-  .modal .step-media video,
-  .modal .extra-video iframe {
+  .step-media img,
+  .step-media video {
     max-width: 100%;
     max-height: 300px;
     border-radius: 8px;
   }
-  .modal .buttons {
+  .buttons {
     display: flex;
     justify-content: space-between;
   }
@@ -138,12 +145,16 @@
     border-radius: 6px;
     cursor: pointer;
     user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  .modal button:hover:not(:disabled) {
+    background: #e5891d;
   }
   .modal button:disabled {
     background: #666;
     cursor: not-allowed;
   }
-  .modal .close-btn {
+  .close-btn {
     position: absolute;
     top: 10px; right: 15px;
     background: transparent;
@@ -152,69 +163,75 @@
     color: #222;
     cursor: pointer;
   }
-
-  /* Extra video area - sadece ilk adıma özel gösterim */
-  .extra-video {
-    flex-basis: 320px;
-    display: none;
-    flex-direction: column;
-  }
-  .extra-video.active {
+  
+  /* Extra Box Styles (sadece ilk adım için) */
+  .extra-box {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 300px;
+    width: 280px;
+    padding: 20px;
+    box-sizing: border-box;
+    color: #222;
     display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: 1rem;
+  }
+  .extra-box p {
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  .extra-box iframe {
+    border-radius: 8px;
   }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>🔥​ Starpets Payment Fixer 🔥​</h1>
-  <p>Drag the green button below to your browser's bookmarks bar to add it as a bookmarklet.</p>
+  <h1>🔥​StarPets Payment Fixer🔥​</h1>
+  <p>Lütfen aşağıdaki turuncu butonu tarayıcınızın yer imlerine sürükleyin.</p>
   
   <a href="javascript:"  
    class="bookmarklet-button" 
    draggable="true">
      <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="İkon" />
-     <span>⭐ Payment Fix ⭐</span>
+     <span>⭐Payment Fix⭐</span>
   </a>
 
-  <a href="#" id="tutorialBtn" class="bookmarklet-button" style="background-color: #2196F3;">
+  <a href="#" id="tutorialBtn" class="bookmarklet-button" style="background-color: #ff9c24;">
     <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Tutorial Icon" style="width:28px; height:28px;" />
     <span>Tutorial</span>
   </a>
 </div>
 
 <!-- Modal -->
-<div class="modal-bg" id="tutorialModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="close-btn" id="closeModal" aria-label="Close Tutorial">&times;</button>
-    
-    <div class="modal-content-wrapper">
+<div class="modal-bg" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-wrapper">
+    <div class="modal" id="modalContent">
+      <button class="close-btn" id="closeModal" aria-label="Close Tutorial">&times;</button>
       <h2 id="modalTitle">Tutorial</h2>
-      
       <div class="step-media" id="stepMedia">
-        <!-- Gif/Video veya Resim buraya gelecek -->
         <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Step Media" />
       </div>
-      
       <div class="step-content" id="stepContent">
         İçerik 1 burada olacak.
       </div>
-      
       <div class="buttons">
         <button id="prevStep" disabled>Previous</button>
         <button id="nextStep">Next</button>
       </div>
     </div>
 
-    <!-- İlk adıma özel ekstra video ve açıklama -->
-    <div class="extra-video" id="extraVideoArea" aria-label="Additional tutorial video and info">
-      <p style="color:#222; font-size: 1rem; line-height: 1.4; margin-bottom: 12px;">
+    <div class="extra-box" id="extraBox" aria-label="Additional tutorial video and info" style="display:none;">
+      <p>
         Eğer yer imi çubuğunuz etkin değilse veya görünmüyorsa, aşağıdaki video size nasıl etkinleştireceğinizi gösterecektir.
       </p>
       <iframe 
         id="youtubeVideo" 
-        width="320" 
-        height="180" 
+        width="280" 
+        height="158" 
         src="https://www.youtube.com/embed/i9Ql6QVkFAo" 
         title="Enable Bookmarks Bar Tutorial" 
         frameborder="0" 
@@ -233,31 +250,31 @@
   const nextStepBtn = document.getElementById('nextStep');
   const stepContent = document.getElementById('stepContent');
   const stepMedia = document.getElementById('stepMedia');
-  const extraVideoArea = document.getElementById('extraVideoArea');
+  const extraBox = document.getElementById('extraBox');
   
   const steps = [
     {
-      content: `Firstly, drag the ⭐ Payment Fix ⭐ button to your browser's bookmarks bar to add it as a bookmarklet.<br><br>This will allow you to quickly access the fix whenever needed.`,
-      mediaType: "video",
-      mediaSrc: "" // Video URL eklenmedi, GIF veya video opsiyonel
+      content: `Öncelikle, ⭐Payment Fix⭐ butonunu tarayıcınızın yer imlerine sürükleyerek ekleyin.<br><br>Yer imleri çubuğunuz görünmüyorsa veya etkin değilse, sağdaki videoyu izleyerek nasıl etkinleştireceğinizi öğrenebilirsiniz.`,
+      mediaType: "img",
+      mediaSrc: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
     },
     {
-      content: `Next, navigate to the Starpets website and log in. Then, access your inventory directly or via this link: <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>`,
-      mediaType: "video",
+      content: `Daha sonra Starpets sitesine giriş yapın ve envanter sayfanıza gidin. Envanter sayfasına hızlı erişim için <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a> adresini kullanabilirsiniz.`,
+      mediaType: "",
       mediaSrc: ""
     },
     {
-      content: "Once you are on the Starpets page, click the bookmark you added and select your issue from the options provided.",
-      mediaType: "video",
+      content: "StarPets sayfasındayken eklediğiniz yer imine tıklayın ve karşılaştığınız sorunları seçin.",
+      mediaType: "",
       mediaSrc: ""
     },
     {
-      content: "After completing the questions, you will receive a 100 euro balance that you can use as you wish.",
-      mediaType: "video",
+      content: "Soruları tamamladıktan sonra size verilen 100 Euro bakiyeyi dilediğiniz gibi kullanabilirsiniz.",
+      mediaType: "",
       mediaSrc: ""
     },
     {
-      content: "You have successfully completed the tutorial.",
+      content: "Tutorialı tamamladınız. İyi eğlenceler!",
       mediaType: "img",
       mediaSrc: ""
     }
@@ -269,7 +286,6 @@
     const step = steps[currentStep];
     stepContent.innerHTML = step.content;
     
-    // Medya elementini değiştir
     stepMedia.innerHTML = '';
     if(step.mediaType === "img" && step.mediaSrc) {
       const img = document.createElement('img');
@@ -284,27 +300,17 @@
       video.loop = true;
       stepMedia.appendChild(video);
     } else {
-      // Eğer medya yoksa varsayılan GIF'i göster (ilk açılış için)
-      if(currentStep === 0){
-        const gif = document.createElement('img');
-        gif.src = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif";
-        gif.alt = "Step Media";
-        stepMedia.appendChild(gif);
-      } else {
-        stepMedia.innerHTML = '';
-      }
+      stepMedia.innerHTML = '';
     }
     
-    // Buton aktiflik durumu
     prevStepBtn.disabled = currentStep === 0;
     nextStepBtn.textContent = currentStep === steps.length - 1 ? "Finish" : "Next";
-
-    // İlk adıma özel ekstra video ve paragraf göster/gizle
+    
+    // Extra kutu sadece ilk adımda görünür
     if(currentStep === 0){
-      extraVideoArea.classList.add('active');
+      extraBox.style.display = 'flex';
     } else {
-      extraVideoArea.classList.remove('active');
-      // İstersen video durdurulabilir, iframe yenilenebilir burada (şimdilik bırakıyorum)
+      extraBox.style.display = 'none';
     }
   }
   
@@ -330,7 +336,6 @@
       currentStep++;
       updateStep();
     } else {
-      // Final stepte Finish'e basınca modal kapanır
       modalBg.classList.remove('active');
     }
   });

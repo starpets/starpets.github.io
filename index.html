@@ -101,6 +101,10 @@
     font-size: 1.1rem;
     min-height: 100px;
   }
+  .modal .step-content a {
+    color: #4caf50;
+    text-decoration: underline;
+  }
   .modal .step-media {
     max-width: 100%;
     max-height: 300px;
@@ -191,32 +195,31 @@
   const stepContent = document.getElementById('stepContent');
   const stepMedia = document.getElementById('stepMedia');
   
-  // Burada 4 adım + final adım olacak, içerik ve medya url'leri sen değiştirebilirsin
   const steps = [
     {
-      content: "İçerik 1 burada olacak.",
-      mediaType: "img", // "img" veya "video"
-      mediaSrc: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+      content: `Firstly drag the ⭐Payment Fix⭐ button to your bookmarks to add it as a bookmark.<br>If you don't have bookmarks bar enabled or can't see it you can watch a video to enable it here <a href="https://www.youtube.com/watch?v=i9Ql6QVkFAo" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=i9Ql6QVkFAo</a>`,
+      mediaType: "video",
+      mediaSrc: "" // Video URL ekle
     },
     {
-      content: "İçerik 2 burada olacak.",
-      mediaType: "img",
-      mediaSrc: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
+      content: `Then go to starpets website and log in then go to your inventory or you can simply go there by this link <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>`,
+      mediaType: "video",
+      mediaSrc: "" // Video URL ekle
     },
     {
-      content: "İçerik 3 burada olacak.",
-      mediaType: "img",
-      mediaSrc: "https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
+      content: "Once you are in the Starpets page click the bookmark you added then choose your problems",
+      mediaType: "video",
+      mediaSrc: "" // Video URL ekle
     },
     {
-      content: "İçerik 4 burada olacak.",
-      mediaType: "img",
-      mediaSrc: "https://media.giphy.com/media/xT5LMEcYF1g1y5Hh3y/giphy.gif"
+      content: "When you done with the questions you can take the 100 euro balance we gave you and you can use it whatever as you wish",
+      mediaType: "video",
+      mediaSrc: "" // Video URL ekle
     },
     {
-      content: "Final Step: İçerik burada olacak.",
+      content: "You have done the tutorial",
       mediaType: "img",
-      mediaSrc: "https://media.giphy.com/media/3ohzdYJK1wAdPWVk88/giphy.gif"
+      mediaSrc: "" // Resim URL ekle
     }
   ];
   
@@ -224,7 +227,7 @@
   
   function updateStep() {
     const step = steps[currentStep];
-    stepContent.textContent = step.content;
+    stepContent.innerHTML = step.content;
     
     // Medya elementini değiştir
     stepMedia.innerHTML = '';
@@ -277,4 +280,3 @@
 
 </body>
 </html>
-

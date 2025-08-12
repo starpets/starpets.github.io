@@ -6,8 +6,6 @@
 <title>Starpets Payment Fix</title>
 <!-- Google Fonts: Poppins -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-<!-- Favicon -->
-<link rel="icon" href="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" type="image/png" />
 <style>
   body {
     margin: 0; padding: 0; height: 100vh;
@@ -25,18 +23,20 @@
   }
   .card {
     background: rgba(0,0,0,0.6);
-    padding: 30px;
+    padding: 30px 40px;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    max-width: 400px;
+    max-width: 480px;  /* büyüttüm */
+    white-space: nowrap; /* yazı satır kırmasın */
   }
   h1, h2 {
     font-weight: 600;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    flex-wrap: nowrap; /* satır kırma yok */
   }
   h1 {
     font-size: 2.5rem;
@@ -47,13 +47,23 @@
     color: #222;
     margin-bottom: 20px;
   }
-  /* Image next to heading text */
+
+  /* Resim yuvarlak ve başta sondada olacak */
   .heading-img {
-    width: 2.8rem; /* Slightly bigger than text */
-    height: 2.8rem;
-    object-fit: contain;
-    vertical-align: middle;
+    width: 3.2rem; /* biraz büyüttüm */
+    height: 3.2rem;
+    object-fit: cover; /* kırpma */
+    border-radius: 50%; /* tam yuvarlak */
+    flex-shrink: 0;
   }
+  /* Resim baş ve son için farklı konumlarda */
+  .heading-img.start {
+    order: -1; /* başa koy */
+  }
+  .heading-img.end {
+    order: 1; /* sona koy */
+  }
+
   p {
     font-weight: 400;
     font-size: 1.1rem;
@@ -236,8 +246,9 @@
 
 <div class="card">
   <h1>
+    <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon Start" class="heading-img start" />
     Starpets Payment Fixer
-    <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Fire Icon" class="heading-img" />
+    <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon End" class="heading-img end" />
   </h1>
   <p>Please drag the green button below into your browser’s bookmarks bar.</p>
   
@@ -263,8 +274,9 @@
     <div class="modal" id="modalContent">
       <button class="close-btn" id="closeModal" aria-label="Close Tutorial">&times;</button>
       <h2 id="modalTitle">
+        <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon Start" class="heading-img start" />
         Tutorial
-        <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Fire Icon" class="heading-img" />
+        <img src="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" alt="Icon End" class="heading-img end" />
       </h2>
       <div class="step-media" id="stepMedia">
         <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Step Media" />
@@ -323,72 +335,67 @@
       mediaSrc: ""
     },
     {
-      content: `After completing the questions, you will receive a 100 Euro balance which you can use as you wish.`,
-      mediaType: "",
-      mediaSrc: ""
+      content: `Once you finish answering the questions, you will receive the €100 balance we provide. Use it however you wish!`,
+      mediaType: "img",
+      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
     },
     {
-      content: `You have completed the tutorial. Enjoy!`,
+      content: `You have completed the tutorial!`,
       mediaType: "img",
-      mediaSrc: ""
+      mediaSrc: "https://cdn-icons-png.flaticon.com/512/190/190411.png"
     }
   ];
-  
   let currentStep = 0;
-  
+
   function updateStep() {
-    const step = steps[currentStep];
-    stepContent.innerHTML = step.content;
-    
-    stepMedia.innerHTML = '';
-    if(step.mediaType === "img" && step.mediaSrc) {
-      const img = document.createElement('img');
-      img.src = step.mediaSrc;
-      img.alt = `Step ${currentStep + 1} Media`;
-      stepMedia.appendChild(img);
-    } else if(step.mediaType === "video" && step.mediaSrc) {
-      const video = document.createElement('video');
-      video.src = step.mediaSrc;
-      video.controls = true;
-      video.autoplay = true;
-      video.loop = true;
-      stepMedia.appendChild(video);
+    stepContent.innerHTML = steps[currentStep].content;
+    if (steps[currentStep].mediaType === "img" && steps[currentStep].mediaSrc) {
+      stepMedia.innerHTML = `<img src="${steps[currentStep].mediaSrc}" alt="Step media" />`;
+    } else if (steps[currentStep].mediaType === "video" && steps[currentStep].mediaSrc) {
+      stepMedia.innerHTML = `<video controls src="${steps[currentStep].mediaSrc}"></video>`;
     } else {
       stepMedia.innerHTML = '';
     }
-    
+
     prevStepBtn.disabled = currentStep === 0;
-    nextStepBtn.textContent = currentStep === steps.length - 1 ? "Finish" : "Next";
-    
-    // Show extra box only on first step
-    extraBox.style.display = currentStep === 0 ? 'flex' : 'none';
+    nextStepBtn.disabled = currentStep === steps.length - 1;
+
+    // Show extraBox only in first step
+    extraBox.style.display = currentStep === 0 ? "flex" : "none";
   }
-  
-  tutorialBtn.addEventListener('click', () => {
+
+  tutorialBtn.addEventListener('click', e => {
+    e.preventDefault();
     modalBg.classList.add('active');
     currentStep = 0;
     updateStep();
   });
-  
+
   closeModal.addEventListener('click', () => {
     modalBg.classList.remove('active');
   });
-  
+
   prevStepBtn.addEventListener('click', () => {
-    if(currentStep > 0) {
+    if (currentStep > 0) {
       currentStep--;
       updateStep();
     }
   });
-  
+
   nextStepBtn.addEventListener('click', () => {
-    if(currentStep < steps.length - 1) {
+    if (currentStep < steps.length - 1) {
       currentStep++;
       updateStep();
-    } else {
+    }
+  });
+
+  // Close modal on background click
+  modalBg.addEventListener('click', (e) => {
+    if (e.target === modalBg) {
       modalBg.classList.remove('active');
     }
   });
+
 </script>
 
 </body>

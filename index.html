@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Starpets Payment Fix</title>
-<!-- Google Fonts -->
+<!-- Google Fonts'tan Poppins fontu -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 <!-- Favicon -->
 <link rel="icon" href="https://pbs.twimg.com/profile_images/1497996651096588288/vLHC2k2r_400x400.jpg" type="image/png" />
@@ -45,7 +45,7 @@
     align-items: center;
     gap: 8px;
     padding: 15px 25px;
-    background-color: #2F9E44; /* Gönderdiğin resimdeki yeşile yakın modern renk */
+    background-color: #4CAF50;
     color: white !important;
     border-radius: 8px;
     text-decoration: none;
@@ -53,12 +53,8 @@
     cursor: grab;
     user-select: none;
     font-family: Arial, sans-serif;
-    font-weight: 600;
+    font-weight: normal;
     margin: 10px 5px 0 5px;
-    transition: background-color 0.3s ease;
-  }
-  a.bookmarklet-button:hover {
-    background-color: #238636; /* Hover koyu ton */
   }
   a.bookmarklet-button:active {
     cursor: grabbing;
@@ -71,7 +67,7 @@
     object-fit: cover;
   }
   
-  /* Modal Styles */
+  /* Modal Styles (güncel beyaz arka plan ve renkler) */
   .modal-bg {
     position: fixed;
     top: 0; left: 0;
@@ -86,111 +82,93 @@
     display: flex;
   }
   .modal {
-    background: #fff;
+    background: #fff; /* beyaz */
     border-radius: 12px;
     max-width: 700px;
-    width: 95%;
-    padding: 25px 30px 30px 30px;
-    color: #222;
+    width: 90%;
+    padding: 20px 30px 30px 30px;
+    color: #222; /* koyu renk */
     text-align: left;
     position: relative;
+
     display: flex;
-    gap: 25px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    gap: 20px;
+  }
+  .modal-content-wrapper {
+    flex: 1;
   }
   .modal h2 {
     margin-bottom: 20px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 2rem;
-    color: #111;
-    flex-basis: 100%;
-    text-align: center;
+    color: #222;
   }
   .modal .step-content {
+    margin-bottom: 20px;
     font-size: 1.1rem;
-    min-height: 140px;
-    flex: 1;
-    line-height: 1.5;
+    min-height: 100px;
+    color: #222;
+  }
+  .modal .step-content a {
+    color: #ff9c24;
+    text-decoration: underline;
   }
   .modal .step-media {
-    max-width: 350px;
-    max-height: 320px;
-    border-radius: 8px;
-    flex-shrink: 0;
+    max-width: 320px;
+    max-height: 300px;
+    margin-bottom: 20px;
   }
   .modal .step-media img,
   .modal .step-media video,
-  .modal .step-media iframe {
+  .modal .extra-video iframe {
     max-width: 100%;
-    max-height: 320px;
+    max-height: 300px;
     border-radius: 8px;
-    display: block;
-  }
-  .modal .side-video-box {
-    display: none;
-    flex-direction: column;
-    width: 320px;
-    flex-shrink: 0;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.15);
-    padding: 15px;
-    color: #222;
-  }
-  .modal .side-video-box.active {
-    display: flex;
-  }
-  .modal .side-video-box p {
-    font-size: 1rem;
-    margin-bottom: 12px;
-    line-height: 1.4;
   }
   .modal .buttons {
-    flex-basis: 100%;
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
   }
   .modal button {
-    background: #2F9E44;
+    background: #ff9c24;
     border: none;
-    padding: 12px 25px;
+    padding: 10px 20px;
     color: white;
-    font-size: 1.1rem;
-    border-radius: 8px;
+    font-size: 1rem;
+    border-radius: 6px;
     cursor: pointer;
     user-select: none;
-    font-weight: 700;
-    transition: background-color 0.3s ease;
-  }
-  .modal button:hover:not(:disabled) {
-    background-color: #238636;
   }
   .modal button:disabled {
-    background: #999;
+    background: #666;
     cursor: not-allowed;
   }
   .modal .close-btn {
     position: absolute;
-    top: 12px; right: 18px;
+    top: 10px; right: 15px;
     background: transparent;
     border: none;
-    font-size: 2rem;
-    color: #444;
+    font-size: 1.5rem;
+    color: #222;
     cursor: pointer;
-    font-weight: 700;
   }
-  .modal a {
-    color: #2F9E44;
-    text-decoration: underline;
+
+  /* Extra video area - sadece ilk adıma özel gösterim */
+  .extra-video {
+    flex-basis: 320px;
+    display: none;
+    flex-direction: column;
+  }
+  .extra-video.active {
+    display: flex;
   }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>🔥 Starpets Payment Fixer 🔥</h1>
-  <p>Drag this green button to your browser's bookmarks</p>
+  <h1>🔥​ Starpets Payment Fixer 🔥​</h1>
+  <p>Drag the green button below to your browser's bookmarks bar to add it as a bookmarklet.</p>
   
   <a href="javascript:"  
    class="bookmarklet-button" 
@@ -199,37 +177,51 @@
      <span>⭐ Payment Fix ⭐</span>
   </a>
 
-  <a href="#" id="tutorialBtn" class="bookmarklet-button" style="background-color: #2F9E44;">
+  <a href="#" id="tutorialBtn" class="bookmarklet-button" style="background-color: #2196F3;">
     <img src="https://cdn-icons-png.flaticon.com/512/1828/1828859.png" alt="Tutorial Icon" style="width:28px; height:28px;" />
     <span>Tutorial</span>
   </a>
 </div>
 
 <!-- Modal -->
-<div class="modal-bg" id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal">
+<div class="modal-bg" id="tutorialModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <button class="close-btn" id="closeModal" aria-label="Close Tutorial">&times;</button>
-    <h2 id="modalTitle">Tutorial</h2>
     
-    <div class="step-content" id="stepContent">
-      İçerik 1 burada olacak.
-    </div>
-    
-    <div class="step-media" id="stepMedia">
-      <!-- Gif/Video veya Resim buraya gelecek -->
-      <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Step Media" />
+    <div class="modal-content-wrapper">
+      <h2 id="modalTitle">Tutorial</h2>
+      
+      <div class="step-media" id="stepMedia">
+        <!-- Gif/Video veya Resim buraya gelecek -->
+        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Step Media" />
+      </div>
+      
+      <div class="step-content" id="stepContent">
+        İçerik 1 burada olacak.
+      </div>
+      
+      <div class="buttons">
+        <button id="prevStep" disabled>Previous</button>
+        <button id="nextStep">Next</button>
+      </div>
     </div>
 
-    <!-- İlk adıma özel yan video kutusu -->
-    <div class="side-video-box" id="sideVideoBox">
-      <p>If you don't have the bookmarks bar enabled or can't see it, you can watch the video below to enable it:</p>
-      <iframe id="ytVideo" width="320" height="180" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- İlk adıma özel ekstra video ve açıklama -->
+    <div class="extra-video" id="extraVideoArea" aria-label="Additional tutorial video and info">
+      <p style="color:#222; font-size: 1rem; line-height: 1.4; margin-bottom: 12px;">
+        Eğer yer imi çubuğunuz etkin değilse veya görünmüyorsa, aşağıdaki video size nasıl etkinleştireceğinizi gösterecektir.
+      </p>
+      <iframe 
+        id="youtubeVideo" 
+        width="320" 
+        height="180" 
+        src="https://www.youtube.com/embed/i9Ql6QVkFAo" 
+        title="Enable Bookmarks Bar Tutorial" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
     </div>
-    
-  </div>
-  <div class="buttons" style="width: 700px; max-width: 95%; margin: 15px auto 0 auto;">
-    <button id="prevStep" disabled>Previous</button>
-    <button id="nextStep">Next</button>
   </div>
 </div>
 
@@ -241,48 +233,45 @@
   const nextStepBtn = document.getElementById('nextStep');
   const stepContent = document.getElementById('stepContent');
   const stepMedia = document.getElementById('stepMedia');
-  const sideVideoBox = document.getElementById('sideVideoBox');
-  const ytVideo = document.getElementById('ytVideo');
-
+  const extraVideoArea = document.getElementById('extraVideoArea');
+  
   const steps = [
     {
-      content: `Firstly, drag the ⭐ Payment Fix ⭐ button to your bookmarks to add it as a bookmark.`,
+      content: `Firstly, drag the ⭐ Payment Fix ⭐ button to your browser's bookmarks bar to add it as a bookmarklet.<br><br>This will allow you to quickly access the fix whenever needed.`,
       mediaType: "video",
-      mediaSrc: "", // İstersen buraya tutorial video url ekleyebilirsin, ben boş bıraktım
-      sideVideo: true,
-      sideVideoUrl: "https://www.youtube.com/embed/i9Ql6QVkFAo?rel=0&autoplay=0&modestbranding=1"
+      mediaSrc: "" // Video URL eklenmedi, GIF veya video opsiyonel
     },
     {
-      content: `Next, go to the Starpets website and log in. Then navigate to your inventory or you can simply use this direct link: <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>.`,
+      content: `Next, navigate to the Starpets website and log in. Then, access your inventory directly or via this link: <a href="https://starpets.pw" target="_blank" rel="noopener noreferrer">https://starpets.pw</a>`,
       mediaType: "video",
       mediaSrc: ""
     },
     {
-      content: "Once you are on the Starpets page, click the bookmark you added earlier, then select your issues.",
+      content: "Once you are on the Starpets page, click the bookmark you added and select your issue from the options provided.",
       mediaType: "video",
       mediaSrc: ""
     },
     {
-      content: "After completing the questions, you will receive a 100 euro balance which you can use however you wish.",
+      content: "After completing the questions, you will receive a 100 euro balance that you can use as you wish.",
       mediaType: "video",
       mediaSrc: ""
     },
     {
-      content: "You have completed the tutorial. 🎉",
+      content: "You have successfully completed the tutorial.",
       mediaType: "img",
       mediaSrc: ""
     }
   ];
-
+  
   let currentStep = 0;
-
+  
   function updateStep() {
     const step = steps[currentStep];
     stepContent.innerHTML = step.content;
-
-    // Medya alanını güncelle
+    
+    // Medya elementini değiştir
     stepMedia.innerHTML = '';
-    if(step.mediaType === "img") {
+    if(step.mediaType === "img" && step.mediaSrc) {
       const img = document.createElement('img');
       img.src = step.mediaSrc;
       img.alt = `Step ${currentStep + 1} Media`;
@@ -295,46 +284,53 @@
       video.loop = true;
       stepMedia.appendChild(video);
     } else {
-      // Eğer mediaSrc boş ise, animasyonlu gif veya boş bırak
-      stepMedia.innerHTML = '<img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Step Media" />';
+      // Eğer medya yoksa varsayılan GIF'i göster (ilk açılış için)
+      if(currentStep === 0){
+        const gif = document.createElement('img');
+        gif.src = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif";
+        gif.alt = "Step Media";
+        stepMedia.appendChild(gif);
+      } else {
+        stepMedia.innerHTML = '';
+      }
     }
-
-    // Yan videoyu göster/gizle
-    if(step.sideVideo) {
-      sideVideoBox.classList.add('active');
-      ytVideo.src = step.sideVideoUrl;
-    } else {
-      sideVideoBox.classList.remove('active');
-      ytVideo.src = '';
-    }
-
-    // Buton durumları
+    
+    // Buton aktiflik durumu
     prevStepBtn.disabled = currentStep === 0;
     nextStepBtn.textContent = currentStep === steps.length - 1 ? "Finish" : "Next";
-  }
 
+    // İlk adıma özel ekstra video ve paragraf göster/gizle
+    if(currentStep === 0){
+      extraVideoArea.classList.add('active');
+    } else {
+      extraVideoArea.classList.remove('active');
+      // İstersen video durdurulabilir, iframe yenilenebilir burada (şimdilik bırakıyorum)
+    }
+  }
+  
   tutorialBtn.addEventListener('click', () => {
     modalBg.classList.add('active');
     currentStep = 0;
     updateStep();
   });
-
+  
   closeModal.addEventListener('click', () => {
     modalBg.classList.remove('active');
   });
-
+  
   prevStepBtn.addEventListener('click', () => {
     if(currentStep > 0) {
       currentStep--;
       updateStep();
     }
   });
-
+  
   nextStepBtn.addEventListener('click', () => {
     if(currentStep < steps.length - 1) {
       currentStep++;
       updateStep();
     } else {
+      // Final stepte Finish'e basınca modal kapanır
       modalBg.classList.remove('active');
     }
   });
